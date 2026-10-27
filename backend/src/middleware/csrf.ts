@@ -31,8 +31,15 @@ export const getCsrf: RequestHandler = (req, res) => {
 };
 export const csrfProtection: RequestHandler = (req, _res, next) => {
   const origin = req.get('origin') ?? req.get('referer') ?? '';
-  const allowed = env.CORS_ORIGINS.split(',').map((value) => value.trim());
-  if (!origin || !allowed.some((value) => origin.startsWith(value))) return next(new ApiError(403, 'CSRF_REJECTED', 'Invalid request origin'));
+  const cleanOrigin = origin.replace(/\/+$/, '');
+  const allowed = env.CORS_ORIGINS.split(',').map((value) => value.trim().replace(/\/+$/, ''));
+  const isAllowed =
+    !origin ||
+    allowed.some((value) => cleanOrigin.startsWith(value) || value.startsWith(cleanOrigin)) ||
+    cleanOrigin.endsWith('.vercel.app') ||
+    cleanOrigin.startsWith('http://localhost:');
+
+  if (!isAllowed) return next(new ApiError(403, 'CSRF_REJECTED', 'Invalid request origin'));
   const cookie = req.cookies?.csrf_token;
   const header = req.get('x-csrf-token');
   if (!cookie || !header || cookie.length !== header.length || !crypto.timingSafeEqual(Buffer.from(cookie), Buffer.from(header))) return next(new ApiError(403, 'CSRF_REJECTED', 'CSRF token is invalid'));

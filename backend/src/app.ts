@@ -30,8 +30,26 @@ app.use(helmet({
   contentSecurityPolicy: { directives: { defaultSrc: ["'none'"], frameAncestors: ["'none'"], baseUri: ["'none'"], formAction: ["'none'"] } },
   hsts: env.NODE_ENV === 'production' ? undefined : false,
 }));
-const allowedOrigins = env.CORS_ORIGINS.split(',').map((origin) => origin.trim());
-app.use(cors({ origin(origin, callback) { if (!origin || allowedOrigins.includes(origin)) callback(null, true); else callback(new Error('CORS origin denied')); }, credentials: true, methods: ['GET', 'POST', 'PATCH', 'DELETE'], allowedHeaders: ['Content-Type', 'X-CSRF-Token'] }));
+const allowedOrigins = env.CORS_ORIGINS.split(',').map((origin) => origin.trim().replace(/\/+$/, ''));
+app.use(
+  cors({
+    origin(origin, callback) {
+      if (!origin) return callback(null, true);
+      const cleanOrigin = origin.replace(/\/+$/, '');
+      if (
+        allowedOrigins.includes(cleanOrigin) ||
+        cleanOrigin.endsWith('.vercel.app') ||
+        cleanOrigin.startsWith('http://localhost:')
+      ) {
+        return callback(null, true);
+      }
+      callback(null, false);
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'X-CSRF-Token'],
+  })
+);
 app.use(express.json({ limit: '10kb', strict: true }));
 app.use(cookieParser());
 app.use((req, _res, next) => { req.body = sanitize(req.body); req.query = sanitize(req.query) as typeof req.query; req.params = sanitize(req.params) as typeof req.params; next(); });
