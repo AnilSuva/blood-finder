@@ -37,6 +37,7 @@ app.use(cookieParser());
 app.use((req, _res, next) => { req.body = sanitize(req.body); req.query = sanitize(req.query) as typeof req.query; req.params = sanitize(req.params) as typeof req.params; next(); });
 app.use(hpp());
 app.use('/api', globalLimiter, issueCsrf);
+app.get('/', (_req, res) => res.json({ service: 'BloodFinder API', status: 'online', health: '/api/health' }));
 app.get('/api/health', (_req, res) => res.json({ status: 'ok' }));
 app.get('/api/csrf', getCsrf);
 app.use('/api/auth', authRouter);
