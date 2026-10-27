@@ -4,7 +4,12 @@ import type { Response } from 'express';
 import { env } from '../config/env.js';
 
 export type AccessPayload = { sub: string; type: 'access' };
-const baseCookie = { httpOnly: true, secure: env.NODE_ENV === 'production', sameSite: 'lax' as const, domain: env.COOKIE_DOMAIN === 'localhost' ? undefined : env.COOKIE_DOMAIN };
+const baseCookie = {
+  httpOnly: true,
+  secure: env.NODE_ENV === 'production',
+  sameSite: (env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
+  domain: env.COOKIE_DOMAIN === 'localhost' || !env.COOKIE_DOMAIN ? undefined : env.COOKIE_DOMAIN,
+};
 
 export function signAccessToken(userId: string): string {
   return jwt.sign({ sub: userId, type: 'access' }, env.JWT_ACCESS_SECRET, { expiresIn: env.ACCESS_TOKEN_TTL as jwt.SignOptions['expiresIn'] });

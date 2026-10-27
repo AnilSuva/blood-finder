@@ -40,7 +40,7 @@ if (!parsed.success) {
   console.error('Invalid environment:', parsed.error.flatten().fieldErrors);
   throw new Error('Invalid environment configuration');
 }
-if (parsed.data.NODE_ENV === 'production' && (!parsed.data.SMTP_HOST || !parsed.data.SMTP_USER || !parsed.data.SMTP_PASS || !parsed.data.TURNSTILE_SECRET_KEY || !parsed.data.GOOGLE_CLIENT_ID)) {
-  throw new Error('Production requires SMTP, Turnstile, and Google configuration');
+if (parsed.data.NODE_ENV === 'production' && !parsed.data.GOOGLE_CLIENT_ID) {
+  throw new Error('Production requires GOOGLE_CLIENT_ID configuration');
 }
 export const env = parsed.data;

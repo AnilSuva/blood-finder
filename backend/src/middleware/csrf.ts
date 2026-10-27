@@ -4,7 +4,13 @@ import { env } from '../config/env.js';
 import { csrfToken } from '../utils/tokens.js';
 import { ApiError } from './error.js';
 
-const cookieOptions = { httpOnly: false, secure: env.NODE_ENV === 'production', sameSite: 'lax' as const, domain: env.COOKIE_DOMAIN === 'localhost' ? undefined : env.COOKIE_DOMAIN, path: '/' };
+const cookieOptions = {
+  httpOnly: false,
+  secure: env.NODE_ENV === 'production',
+  sameSite: (env.NODE_ENV === 'production' ? 'none' : 'lax') as 'none' | 'lax',
+  domain: env.COOKIE_DOMAIN === 'localhost' || !env.COOKIE_DOMAIN ? undefined : env.COOKIE_DOMAIN,
+  path: '/',
+};
 export const issueCsrf: RequestHandler = (req, res, next) => {
   if (!req.cookies?.csrf_token) {
     const token = csrfToken();

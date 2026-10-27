@@ -1,6 +1,7 @@
 'use client';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import type { User } from '@/lib/types';
 import { Status } from '@/components/ui';
@@ -43,9 +44,21 @@ export default function LoginPage() {
   const [pending, setPending] = useState(false);
   const [isReady, setIsReady] = useState(false);
 
+  const me = useQuery({
+    queryKey: ['me'],
+    queryFn: () => api<{ user: User }>('/me'),
+    retry: false,
+  });
+
   const finish = useCallback((user: User) => {
     router.replace(user.onboardingComplete ? '/' : '/onboarding');
   }, [router]);
+
+  useEffect(() => {
+    if (me.data?.user) {
+      router.replace(me.data.user.onboardingComplete ? '/' : '/onboarding');
+    }
+  }, [me.data, router]);
 
   useEffect(() => {
     const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID?.trim();
