@@ -1,5 +1,4 @@
 'use client';
-import Link from 'next/link';
 import { useEffect, useMemo, useState } from 'react';
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -13,14 +12,10 @@ import {
   CheckCircle,
   Clock,
   Heart,
-  HelpCircle,
   MapPin,
   MessageCircle,
   Phone,
-  Plus,
   RefreshCw,
-  Share2,
-  ShieldCheck,
   User as UserIcon,
   XCircle,
 } from 'lucide-react';
@@ -91,7 +86,7 @@ export default function HomePage() {
   }, [rawRequests, filterTab, user?.bloodGroup]);
 
   return (
-    <div className="min-h-screen bg-slate-50/70 pb-28">
+    <div className="min-h-screen bg-slate-50/70 pb-8">
       <Topbar />
 
       <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-6">
@@ -128,16 +123,6 @@ export default function HomePage() {
                     </strong>
                   </p>
                 </div>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/request/new"
-                  className="inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-blood-600 to-blood-700 px-4 py-2.5 text-xs font-bold text-white shadow-sm shadow-blood-600/20 hover:from-blood-700 hover:to-blood-800 active:scale-[0.98] transition"
-                >
-                  <Plus className="h-4 w-4" />
-                  Post Blood Request
-                </Link>
               </div>
             </div>
           </div>
@@ -235,13 +220,7 @@ export default function HomePage() {
                 ? "You haven't posted any blood requests yet. Click below if you or someone you know needs urgent blood."
                 : "Great news! There are no open urgent blood requirements in your city right now. We'll alert you when someone needs your blood type."}
             </p>
-            <Link
-              href="/request/new"
-              className="mt-5 inline-flex items-center gap-1.5 rounded-xl bg-blood-600 px-4 py-2.5 text-xs sm:text-sm font-semibold text-white shadow-sm hover:bg-blood-700 transition"
-            >
-              <Plus className="h-4 w-4" />
-              Create Blood Request
-            </Link>
+
           </div>
         )}
 
@@ -419,14 +398,7 @@ export default function HomePage() {
         )}
       </main>
 
-      {/* Floating CTA for Mobile */}
-      <Link
-        href="/request/new"
-        className="fixed bottom-5 left-4 right-4 z-30 flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blood-600 to-blood-700 py-3.5 text-sm font-bold text-white shadow-xl shadow-blood-700/30 hover:from-blood-700 hover:to-blood-800 active:scale-[0.98] sm:hidden"
-      >
-        <Plus className="h-5 w-5" />
-        Request Emergency Blood
-      </Link>
+
     </div>
   );
 }
